@@ -64,6 +64,7 @@ elif args.name:
         iconuuid
     except NameError:
         print('Could not find part!')
+        exit(1)
 else:
     print('Error: You need to define -n or -u')
     exit(1)
@@ -71,14 +72,14 @@ else:
 targetx = 0
 targety = 0
 class IconHandler(handler.ContentHandler):
-    lastname = ''
-    def startElement(self, name, attrs):
-        global targetx, targety, lastname
-        if name == 'Index':
-            lastname = attrs['name']
-        elif name == 'Frame':
+    lastuuid = ''
+    def startElement(self, elementname, attrs):
+        global targetx, targety, lastuuid
+        if elementname == 'Index':
+            lastuuid = attrs['name']
+        elif elementname == 'Frame':
             x, y = attrs['point'].split(' ')
-            if lastname == iconuuid:
+            if lastuuid == iconuuid:
                 targetx = int(x)
                 targety = int(y)
 
