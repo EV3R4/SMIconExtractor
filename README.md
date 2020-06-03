@@ -12,13 +12,16 @@
 ### Config
 ```json
 {
-    "iconmappng": "<insert Scrap Mechanic Data/Survival folder here>/Gui/IconMap<Survival>.png",
-    "iconmapxml": "<insert Scrap Mechanic Data/Survival folder here>/Gui/IconMap<Survival>.xml",
-    "descriptions": "<insert Scrap Mechanic Data/Survival folder here>/Gui/Language/<insert 'English' or your language here>/inventoryDescriptions.json"
+    "files": "<Scrap Mechanic Data folder>",
+    "language": "<Your language ('English' recommended)>"
 }
 ```
 
 ## Executing SMIconExtractor
 Run `python extract.py` with the needed arguments
 
-The value of `-n` (name) or `-u` (uuid) needs to be set to the name/uuid of the icon
+The value of `-n` (name) or `-u` (UUID) needs to be set to the name/UUID of the icon
+
+The map can be specified with `-m`, maps available: data, customization, tool, survival
+
+If you are extracting from customizations you need to specify a gender with `-g` (male or female, the most things only work with male)
