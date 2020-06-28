@@ -113,8 +113,17 @@ xmlparser.parse(config['files'] + MAPS[args.map] + '.xml')
 
 img = cv2.imread(config['files'] + MAPS[args.map] + '.png', cv2.IMREAD_UNCHANGED)
 imgname = name
+
 if len(args.gender) > 0:
     imgname += '_' + args.gender
+
+origname = imgname
+imgname = re.sub(':', '', imgname)
+
+if imgname != origname:
+    print('Original name was: "' + origname + '"')
+    print('Modified name is:  "' + imgname + '"')
+
 cv2.imwrite(imgname + '.png', img[targety:targety+96, targetx:targetx+96])
 
 print('Finished!')
