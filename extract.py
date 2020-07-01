@@ -10,11 +10,12 @@ from xml.sax import make_parser, handler
 
 # ArgumentParser
 ap = ArgumentParser()
-ap.add_argument('-c', '--config', required=False, help='Path to the config file', default='config.json')
-ap.add_argument('-n', '--name', required=False, help='Name of the icon')
-ap.add_argument('-u', '--uuid', required=False, help='UUID of the icon (replaces -n)')
-ap.add_argument('-m', '--map', required=False, help='Map to extract from (default survival)', default='survival')
-ap.add_argument('-g', '--gender', required=False, help='Gender (for customization)', default='')
+ap.add_argument('-c', '--config', required=False, help='Path to the config file.', default='config.json')
+ap.add_argument('-n', '--name', required=False, help='Name of the icon.')
+ap.add_argument('-u', '--uuid', required=False, help='UUID of the icon (replaces -n).')
+ap.add_argument('-p', '--precise',required=False, help='If passed to the program the search will be precise.', action='store_true')
+ap.add_argument('-m', '--map', required=False, help='Map to extract from (default survival).', default='survival')
+ap.add_argument('-g', '--gender', required=False, help='Gender (for customization).', default='')
 args = ap.parse_args()
 
 CONFIG_FORMAT = {
@@ -52,18 +53,21 @@ load_config()
 
 MAPS = {
     'data': '/Data/Gui/IconMap',
+    'challenge': '/Data/Gui/IconMap',
     'customization': '/Data/Gui/CustomizationIconMap',
     'tool': '/Data/Gui/ToolIconMap',
     'survival': '/Survival/Gui/IconMapSurvival'
 }
 FOLDERS = {
     'data': '/Data',
+    'challenge': '/ChallengeData',
     'customization': '/Data',
     'tool': '/Data',
     'survival': '/Survival'
 }
 DESCRIPTIONFILES = {
     'data': '/Gui/Language/' + config['language'] + '/InventoryItemDescriptions.json',
+    'challenge': '/Gui/Language/' + config['language'] + '/inventoryDescriptions.json',
     'customization': '/Gui/Language/' + config['language'] + '/CustomizationDescriptions.json',
     'tool': '/Gui/Language/' + config['language'] + '/InventoryItemDescriptions.json',
     'survival': '/Gui/Language/' + config['language'] + '/inventoryDescriptions.json'
@@ -72,16 +76,22 @@ if not args.map in MAPS:
     print('Map "' + args.map + '" does not exist!')
     exit(1)
 
+argstitlelower = args.name.lower()
+
 if args.uuid:
     name = args.uuid
     iconuuid = args.uuid
 elif args.name:
-    name = args.name
     with open(config['files'] + FOLDERS[args.map] + DESCRIPTIONFILES[args.map], 'r') as f:
-        descriptions = loads(re.sub('//.+', '', f.read()))
+        descriptions = loads(re.sub(r'//.+', '', f.read()))
         for uuid in descriptions:
             value = descriptions[uuid]
-            if value['title'] == args.name:
+            desctitlelower = value['title'].lower()
+            if desctitlelower == argstitlelower or (
+                not args.precise and
+                argstitlelower in desctitlelower):
+
+                name = value['title']
                 iconuuid = uuid
 
     try:
@@ -92,6 +102,9 @@ elif args.name:
 else:
     print('Error: You need to define -n or -u')
     exit(1)
+
+if (name.lower() != argstitlelower):
+    print('Found part: "' + name + '" [unprecise]')
 
 targetx = 0
 targety = 0
@@ -118,11 +131,10 @@ if len(args.gender) > 0:
     imgname += '_' + args.gender
 
 origname = imgname
-imgname = re.sub(':', '', imgname)
+imgname = re.sub(r':|\/|\?', '', imgname)
 
 if imgname != origname:
-    print('Original name was: "' + origname + '"')
-    print('Modified name is:  "' + imgname + '"')
+    print('Filename changed to "' + imgname + '"')
 
 cv2.imwrite(imgname + '.png', img[targety:targety+96, targetx:targetx+96])
 
