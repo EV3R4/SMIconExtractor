@@ -76,12 +76,11 @@ if not args.map in MAPS:
     print('Map "' + args.map + '" does not exist!')
     exit(1)
 
-argstitlelower = args.name.lower()
-
 if args.uuid:
     name = args.uuid
     iconuuid = args.uuid
 elif args.name:
+    argstitlelower = args.name.lower()
     with open(config['files'] + FOLDERS[args.map] + DESCRIPTIONFILES[args.map], 'r') as f:
         descriptions = loads(re.sub(r'//.+', '', f.read()))
         for uuid in descriptions:
@@ -103,7 +102,7 @@ else:
     print('Error: You need to define -n or -u')
     exit(1)
 
-if (name.lower() != argstitlelower):
+if args.name and name.lower() != argstitlelower:
     print('Found part: "' + name + '" [unprecise]')
 
 targetx = 0
